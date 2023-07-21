@@ -1,67 +1,100 @@
 import pygame
 
-from components.power.map import PowerMap
+from components.buildings.house import House
+from components.map import PowerMap
 from components.power.pole import PowerPole
+from utils import coordinates_to_index
 
-# Initialize Pygame
-pygame.init()
 
-# Set up the display
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Watt Wizards - The Game")
+class Game:
+    # Initialize the class
+    def __init__(self, screen: pygame.Surface):
+        # Set up the display
+        self.screen = screen
+        background_image = pygame.image.load("assets/grass.png").convert() 
 
-background_image = pygame.image.load("assets/grass.png").convert() 
+        # Set up the clock
+        self.clock = pygame.time.Clock()
 
-# Set up the clock
-clock = pygame.time.Clock()
+        # Set up the font
+        font_path = "assets/fonts/Planewalker.otf"
+        self.font = pygame.font.Font(font_path, 24)
+        self.text_surface = self.font.render("Hello World", True, (255, 255, 255))
+        self.text_width, self.text_height = self.text_surface.get_size()
 
-# Set up the font
-font_path = "assets/fonts/Planewalker.otf"
-font = pygame.font.Font(font_path, 24)
-text_surface = font.render("Hello World", True, (255, 255, 255))
-text_width, text_height = text_surface.get_size()
+        # Create a sprite group
+        self.sprite_group = pygame.sprite.Group()
 
-# Create a sprite group
-sprite_group = pygame.sprite.Group()
+        self.power_map = PowerMap(background_image, screen)
 
-power_map = PowerMap(background_image, screen)
-old_pole = None
-# Game loop
-running = True
-while running:
-    # Handle events
-    for event in pygame.event.get():
+    def start_game_loop(self):
+        self.pole_selection = None
+        
+        self.running = True 
+        while self.running:
+            for event in pygame.event.get():
+                self.handle_event(event)
+
+            self.power_map.draw()
+
+            # Get the mouse position
+            #mouse_pos = pygame.mouse.get_pos()
+            self.sprite_group.draw(self.screen)
+            # Update the screen
+            pygame.display.flip()
+ 
+    def add_houses(self, houses: list[House]):
+        self.power_map.add_houses(houses)
+
+    def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.QUIT:
-            running = False
-
-    # Clear the screen
-    screen.fill((255, 255, 255))
-
-    power_map.draw()
-
-    screen.blit(text_surface, (screen_width - text_width, 0))
+            self.quit_game()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.handle_mouse_up(event)
+        elif event.type == pygame.VIDEORESIZE:
+            self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
     
-    # Handle mouse events
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        if event.button == 1:  # Left mouse button
-            new_pole = PowerPole(*pygame.mouse.get_pos())
-            power_map.add_pole(new_pole)
-            if old_pole:
-                power_map.grid.add_connection(old_pole, new_pole)
-            old_pole = new_pole
-            print("Left mouse button clicked at", event.pos)
-        elif event.button == 2:  # Middle mouse button
-            print("Middle mouse button clicked at", event.pos)
-        elif event.button == 3:  # Right mouse button
-            print("Right mouse button clicked at", event.pos)
+    def handle_mouse_up(self, event: pygame.event.Event):
+        mouse_pos = coordinates_to_index(self.screen, *pygame.mouse.get_pos())
+        if event.button == 1:
+            pole_at_pos = self.power_map.get_pole_at(mouse_pos)
+            if pole_at_pos is not None:
+                print("Pole at pos")
+                if pole_at_pos == self.pole_selection:
+                    self.pole_selection = None
+                    return
+                
+                if self.pole_selection is not None:
+                    self.power_map.grid.add_connection(self.pole_selection, pole_at_pos)
+                    self.pole_selection = None
+                    return
+                    
+                self.pole_selection = pole_at_pos
+                return
+                
+            new_pole = PowerPole(*mouse_pos)
+            self.power_map.add_pole(new_pole)
+            self.pole_selection = None    
+        
+        if event.button == 3:
+            self.power_map.remove_pole_at(mouse_pos)
+    
+    def quit_game(self):
+        print("Goodbye!")
+        self.running = False
 
-    # Get the mouse position
-    mouse_pos = pygame.mouse.get_pos()
-    sprite_group.draw(screen)
-    # Update the screen
-    pygame.display.flip()
+if __name__ == "__main__":
+    pygame.init()
 
-# Quit Pygame
-pygame.quit()
+    screen_width = 800
+    screen_height = 600
+    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+    pygame.display.set_caption("Watt Wizards - The Game")
+
+    game = Game(screen)
+
+    houses = [House(5,5),House(10,2)]
+    game.add_houses(houses)
+    game.start_game_loop()
+
+    pygame.quit()
