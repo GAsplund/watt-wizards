@@ -52,29 +52,27 @@ class PowerGrid:
 
     def check_grid_power(self):
         house_power = self.drain_houses.copy()
-        visited = []
+        visited = set()
         for power_house in self.power_houses:
             power_house_power = power_house.get_power()
-            node_queue = [power_house]
+            node_queue = [(power_house,0)]
             while len(node_queue) > 0 and power_house_power > 0:
-                current_node = node_queue.pop(-1)
+                (current_node, level) = node_queue.pop(-1)
                 for node_pos in self.graph.get_vertex(current_node.get_position()):
                     next_node = self.nodes[node_pos]
                     if next_node in visited:
                         continue
-                    if next_node in house_power:
-                        if power_house_power > next_node.get_power():
-                            power_house_power += next_node.get_power()
-                            house_power.remove(next_node)
-                    else:
-                        visited.append(current_node)
-                        node_queue.append(next_node)
-                        power_house_power -= 1
+                    if next_node not in house_power:
+                        visited.add(current_node)
+                        node_queue.append((next_node, level+1))
+                        continue
+                    if power_house_power > next_node.get_power() + level:
+                        power_house_power += next_node.get_power() - level
+                        house_power.remove(next_node)
+                        
         if len(house_power) == 0:
             self.has_won = True
-
-
-            
+ 
     def win_condition_met(self):
         return self.has_won
 
