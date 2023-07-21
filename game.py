@@ -1,6 +1,7 @@
 import pygame
 
 from components.buildings.house import House
+from components.buildings.power_house import PowerHouse
 from components.map import PowerMap
 from components.power.pole import PowerPole
 from utils import coordinates_to_index
@@ -42,9 +43,13 @@ class Game:
             self.sprite_group.draw(self.screen)
             # Update the screen
             pygame.display.flip()
+            
+            if self.power_map.win_condition_met():
+                self.quit_game()
  
     def add_houses(self, houses: list[House]):
-        self.power_map.add_houses(houses)
+        for house in houses:
+            self.power_map.add_node(house)
 
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.QUIT:
@@ -57,27 +62,27 @@ class Game:
     def handle_mouse_up(self, event: pygame.event.Event):
         mouse_pos = coordinates_to_index(self.screen, *pygame.mouse.get_pos())
         if event.button == 1:
-            pole_at_pos = self.power_map.get_pole_at(mouse_pos)
+            pole_at_pos = self.power_map.get_node_at(mouse_pos)
             if pole_at_pos is not None:
-                print("Pole at pos")
                 if pole_at_pos == self.pole_selection:
                     self.pole_selection = None
                     return
                 
                 if self.pole_selection is not None:
-                    self.power_map.grid.add_connection(self.pole_selection, pole_at_pos)
+                    self.power_map.add_connection(self.pole_selection, pole_at_pos)
                     self.pole_selection = None
                     return
                     
                 self.pole_selection = pole_at_pos
                 return
-                
-            new_pole = PowerPole(*mouse_pos)
-            self.power_map.add_pole(new_pole)
+            
+             
+            new_pole = PowerPole(mouse_pos)
+            self.power_map.add_node(new_pole)
             self.pole_selection = None    
         
         if event.button == 3:
-            self.power_map.remove_pole_at(mouse_pos)
+            self.power_map.remove_node_at(mouse_pos)
     
     def quit_game(self):
         print("Goodbye!")
@@ -93,7 +98,7 @@ if __name__ == "__main__":
 
     game = Game(screen)
 
-    houses = [House(5,5),House(10,2)]
+    houses = [House((5,5)),House((10,2)), PowerHouse((10,10))]
     game.add_houses(houses)
     game.start_game_loop()
 
