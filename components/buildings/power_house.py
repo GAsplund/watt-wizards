@@ -7,7 +7,8 @@ from utils import *
 class PowerHouse(House):
 	def __init__(self, position:tuple[int,int]):
 		super().__init__(position)
-		self.actual_image = pygame.image.load("assets/powerhouse.png")
+		self.base_image = pygame.image.load("assets/powerhouse.png")
+		self.image = pygame.transform.scale(self.base_image,(800,600))
     
 	def is_conductive(self):
 		return True

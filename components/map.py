@@ -10,16 +10,20 @@ class PowerMap:
     def __init__(self, background_image: pygame.Surface, screen: pygame.Surface):
         self.grid = PowerGrid()
         self.background_image = background_image
+        self.resize_image(screen)
         self.screen = screen
 
     def draw_background(self):
         # TODO: Implement grid drawing code here
         block_width=int(self.screen.get_width()/grid_width)
         block_height=int(self.screen.get_height()/grid_height)
-        background_image = pygame.transform.scale(self.background_image, (block_width, block_height))
         for x in range(0, self.screen.get_width(), block_width):
             for y in range(0, self.screen.get_height()-block_width,block_height ):
-                self.screen.blit(background_image, (x, y))
+                self.screen.blit(self.image, (x, y))
+
+    def resize_image(self,screen:pygame.Surface):
+        self.image = pygame.transform.scale(self.background_image, (screen.get_width(), screen.get_height()))
+        self.grid.resize(screen)
 
     def draw(self):
         self.draw_background()

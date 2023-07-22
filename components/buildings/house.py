@@ -11,16 +11,19 @@ class House(pygame.sprite.Sprite, PowerEndpoint):
 		pygame.sprite.Sprite.__init__(self)
 		PowerEndpoint.__init__(self,position)
 		
-		self.actual_image = pygame.image.load("assets/house.png")
-		self.actual_image = pygame.transform.rotate(self.actual_image, randint(0,45))
+		self.base_image = pygame.image.load("assets/house.png")
+		self.image = pygame.transform.scale(self.base_image,(800,600))
+		#self.actual_image = pygame.transform.rotate(self.actual_image, randint(0,45))
     
 	def draw(self, screen: pygame.Surface):
 		block_width = int(screen.get_width()/grid_width)
 		block_height = int(screen.get_height()/grid_height)
-		image = pygame.transform.scale(self.actual_image, (block_width, block_height))
-		self.rect = image.get_rect()
+		self.rect = self.image.get_rect()
 		self.rect.center = index_to_coordinates(screen, *self.position)
-		screen.blit(image, self.rect)
+		screen.blit(self.image, self.rect)
+	
+	def resize_image(self, screen: pygame.Surface):
+		self.image = pygame.transform.scale(self.base_image, (screen.get_width(), screen.get_height()))
 
 	def is_conductive(self):
 		return False

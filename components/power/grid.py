@@ -2,7 +2,6 @@ import pygame
 
 from components.power.endpoint import PowerEndpoint
 from components.power.node import PowerNode
-from components.power.pole import PowerPole
 from data_structures.undirected_graph import UndirectedGraph
 from utils import index_to_coordinates
 
@@ -46,7 +45,10 @@ class PowerGrid:
             self.nodes.pop(pos, None)
             self.graph.remove_vertex(pos)
             self.total_poles += 1
-    
+            
+    def resize(self, screen: pygame.Surface):
+        for node in self.nodes.values():
+            node.resize(screen)
     def get_node_at(self,pos: tuple[int,int]):
         return self.nodes.get(pos,None)
 

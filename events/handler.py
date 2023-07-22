@@ -1,4 +1,6 @@
-import pygame, sys
+import sys
+
+import pygame
 
 
 class EventHandler:
@@ -9,5 +11,5 @@ class EventHandler:
 
     @staticmethod
     def __handle_event(event):
-        
+        pass
     

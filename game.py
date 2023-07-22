@@ -16,6 +16,9 @@ class Game:
 
         # Set up the clock
         self.clock = pygame.time.Clock()
+        pygame.mixer.init()
+        pygame.mixer.music.load("assets/music/Big_Mojo.mp3")
+        pygame.mixer.music.play(-1)
 
         # Set up the font
         font_path = "assets/fonts/Planewalker.otf"
