@@ -27,9 +27,9 @@ class PowerHouse(House):
 	def draw(self, screen: pygame.Surface):
 		super().draw(screen)
 		text = f"Re: {self.remaining_power}, Tot: {15}"
-		text_surface = self.font.render(text, True, (255, 105, 180))
+		text_surface = self.font.render(text, True, (200, 200, 200))
 		rect = text_surface.get_rect(center=index_to_coordinates(screen, self.position[0], self.position[1]))
-		pygame.draw.rect(screen, (255, 191, 0), rect)
+		pygame.draw.rect(screen, (0,0,0), rect)
 		screen.blit(text_surface, rect)
 
 		

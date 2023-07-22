@@ -4,6 +4,7 @@ from game import Game
 from game_state import GameState
 from components.buildings.house import House
 from components.buildings.power_house import PowerHouse
+from components.boulder import Boulder
 
 state = GameState.MAIN_MENU
 
@@ -24,6 +25,7 @@ if __name__ == "__main__":
         House((0,9)),House((3,9)),House((6,9)),House((13,9)),House((16,9)),House((19,9)),
         House((6,14)),House((13,14)),
         ]
+    stons = [Boulder((5,5)),Boulder((3,2)),Boulder((7,12))]
 
     power_hice_lvl2 = [PowerHouse((1,1)),PowerHouse((11,12)), PowerHouse((15,10))]
     drain_hice_lvl2 = [House((1,12)),House((11,1)),House((5,5)),House((10,2)),House((2,10)),House((4,9)),House((3,3)),House((9,12)),House((14,13)),House((17,7)),House((19,3))]
@@ -35,17 +37,17 @@ if __name__ == "__main__":
     while state != GameState.EXIT:
         if state == GameState.LEVEL_1:
             game.flush()
-            game.erect_hice(power_hice_lvl1+drain_hice_lvl1)
+            game.erect_hice(power_hice_lvl1+drain_hice_lvl1+stons)
             state = game.start_game_loop()
         elif state == GameState.LEVEL_2:
             game.flush()
-            game.erect_hice(power_hice_lvl2+drain_hice_lvl2)
+            game.erect_hice(power_hice_lvl2+drain_hice_lvl2+stons)
             state = game.start_game_loop()
         elif state == GameState.MAIN_MENU or state == GameState.GAME_OVER:
             sound_controller.stop_music()
             sound_controller.start_menu_music()
             state = menu.open_menu()
         else:
-            break;
+            break
 
     pygame.quit()

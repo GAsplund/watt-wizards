@@ -5,8 +5,10 @@ class SoundController:
     def __init__(self):
         pygame.mixer.init()
         self.sounds = {
-            "place_pole": pygame.mixer.Sound("assets/sfx/woosh.mp3"),
-            "connect":pygame.mixer.Sound("assets/sfx/zap.mp3")
+            "place_pole": pygame.mixer.Sound("assets/sfx/whoosh.mp3"),
+            "connect":pygame.mixer.Sound("assets/sfx/zap.mp3"),
+            "demolition":pygame.mixer.Sound("assets/sfx/demolition.wav"),
+            "fail":pygame.mixer.Sound("assets/sfx/fail.mp3"),
         }
    
     def start_music(self):

@@ -1,7 +1,7 @@
 import pygame
 
 from components.power.endpoint import PowerEndpoint
-from components.power.node import PowerNode
+from components.power.node import PowerNode, BlockNode
 from components.power.pole import PowerPole
 from data_structures.undirected_graph import UndirectedGraph
 from utils import index_to_coordinates
@@ -12,6 +12,7 @@ class PowerGrid:
         self.graph = UndirectedGraph()
         self.nodes: dict[tuple[int, int], PowerNode] = {} 
         self.total_poles = total_poles
+        self.max_poles = total_poles
         self.power_houses = []
         self.drain_houses = []
         self.has_won = False
@@ -22,7 +23,8 @@ class PowerGrid:
             self.graph.add_vertex(power_node.get_position()) 
 
             if not isinstance(power_node, PowerEndpoint):
-                self.total_poles -= 1
+                if isinstance(power_node, PowerPole):
+                    self.total_poles -= 1
                 return
             
             if power_node.get_power() > 0:
@@ -35,6 +37,8 @@ class PowerGrid:
             return False
         if self.__connection_check(start, end):
             return False
+        if isinstance(start, BlockNode) or isinstance(end, BlockNode):
+            return False
         self.graph.add_edge(start.get_position(), end.get_position())
         self.check_grid_power()
         return True
@@ -46,7 +50,39 @@ class PowerGrid:
             return True
         if not end.is_conductive() and self.__nr_connections(end) > 0:
             return True
+        if self.__check_for_obstruction(start, end):
+            return True
         return False 
+
+    def __check_for_obstruction(self,start: PowerNode, end: PowerNode):
+        for point in self.__get_line(start.get_position(), end.get_position()):
+            if point in self.nodes and not point == start.get_position() and not point == end.get_position():
+                return True
+        return False
+    
+    @staticmethod
+    def __get_line(start:tuple[int,int], end:tuple[int,int]):
+        """Return a list of coordinates between start and end."""
+        x0, y0 = start
+        x1, y1 = end
+        dx = abs(x1 - x0)
+        dy = abs(y1 - y0)
+        sx = 1 if x0 < x1 else -1
+        sy = 1 if y0 < y1 else -1
+        err = dx - dy
+        line = []
+        while True:
+            line.append((x0, y0))
+            if x0 == x1 and y0 == y1:
+                break
+            e2 = 2 * err
+            if e2 > -dy:
+                err -= dy
+                x0 += sx
+            if e2 < dx:
+                err += dx
+                y0 += sy
+        return line
 
     def __nr_connections(self, node: PowerNode):
         return len(self.graph.get_vertex(node.get_position()))
@@ -57,16 +93,17 @@ class PowerGrid:
     
     def remove_node_at(self, pos: tuple[int,int]):
         node = self.nodes.get(pos, None)
-        if node is None:
-            return
+        if node is None or isinstance(node, BlockNode):
+            return False
         self.graph.remove_vertex(pos)
         if node.is_destructible():
             self.nodes.pop(pos, None)
             self.total_poles += 1
             self.check_grid_power()
-            return
+            return True
         self.graph.add_vertex(pos)
         self.check_grid_power()
+        return True
                       
     def resize(self, screen: pygame.Surface):
         for node in self.nodes.values():

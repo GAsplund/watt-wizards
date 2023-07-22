@@ -23,6 +23,8 @@ class MainMenu:
 
     def open_menu(self):
         # Main game loop
+
+
         while True:
             # Handle events
             for event in pygame.event.get():
@@ -31,7 +33,9 @@ class MainMenu:
                     sys.exit()
                 elif event.type == pygame.VIDEORESIZE:
                     self.resize_buttons() 
-                    self.background_image = pygame.transform.scale(self.background_image_original, (event.w, event.h))
+                    #self.background_image = pygame.transform.scale(self.background_image_original, (event.w, event.h))
+                    # Scale and maintain aspect ratio
+                    self.background_image = pygame.transform.scale(self.background_image_original, (event.w, int(event.w / self.background_image_original.get_width() * self.background_image_original.get_height())))
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if self.level_1_button.collidepoint(event.pos):
                         return GameState.LEVEL_1
@@ -42,8 +46,7 @@ class MainMenu:
                     
             self.resize_buttons()
                     
-            # Clear the screen
-            self.screen.fill((0, 0, 0))
+            
 
             # Draw the background
             self.screen.blit(self.background_image, (0, 0))
@@ -55,6 +58,18 @@ class MainMenu:
             pygame.draw.rect(self.screen, (255, 255, 255), self.level_1_button)
             pygame.draw.rect(self.screen, (255, 255, 255), self.level_2_button)
             pygame.draw.rect(self.screen, (255, 255, 255), self.exit_button)
+            if self.level_1_button.collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.rect(self.screen, (0,0,0), self.level_1_button,5)
+                pygame.mouse.set_cursor(pygame.cursors.diamond)
+            if self.level_2_button.collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.rect(self.screen, (0,0,0), self.level_2_button,5)
+                pygame.mouse.set_cursor(pygame.cursors.diamond)
+            if self.exit_button.collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.rect(self.screen, (0,0,0), self.exit_button,5)
+                pygame.mouse.set_cursor(pygame.cursors.broken_x)
+            else:
+                pygame.mouse.set_cursor(pygame.cursors.arrow)
+
             level1_text = self.font.render("Level 1", True, (0, 0, 0))
             level2_text = self.font.render("Level 2", True, (0, 0, 0))
             exit_text = self.font.render("Exit", True, (0, 0, 0))

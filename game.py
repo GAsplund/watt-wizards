@@ -61,7 +61,7 @@ class Game:
  
     def erect_hice(self, houses: list[House]):
         for house in houses:
-            self.power_map.add_node(house)
+            self.power_map.erect_pole(house)
     def flush(self):
         self.power_map.flush()
 
@@ -86,6 +86,8 @@ class Game:
                 if self.pole_selection is not None:
                     if self.power_map.add_connection(self.pole_selection, pole_at_pos):
                         self.sound_controller.play_sound("connect")
+                    else:
+                        self.sound_controller.play_sound("fail")
                     self.pole_selection = None
                     return
                     
@@ -94,12 +96,15 @@ class Game:
             
              
             new_pole = PowerPole(mouse_pos)
-            self.power_map.add_node(new_pole)
+            self.power_map.erect_pole(new_pole)
             self.sound_controller.play_sound("place_pole")
             self.pole_selection = None    
         
         if event.button == 3:
-            self.power_map.remove_node_at(mouse_pos)
+            if self.power_map.remove_node_at(mouse_pos):
+                self.sound_controller.play_sound("demolition")
+            else:
+                self.sound_controller.play_sound("fail")
     
     def quit_game(self):
         print("Goodbye!")

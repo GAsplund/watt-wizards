@@ -14,3 +14,14 @@ class PowerNode(ABC):
     @abstractmethod
     def is_destructible(self):
         pass
+    
+
+class BlockNode(PowerNode):
+    def __init__(self,position: tuple[int, int] ):
+        super().__init__(position)
+    
+    def is_conductive(self):
+        return False
+
+    def is_destructible(self):
+        return False
