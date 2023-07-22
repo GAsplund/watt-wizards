@@ -9,7 +9,7 @@ class PowerPole(pygame.sprite.Sprite, PowerNode):
         pygame.sprite.Sprite.__init__(self)
         PowerNode.__init__(self,position)
         self.base_image = pygame.image.load("assets/powerpole.png")
-        self.image = pygame.transform.scale(self.base_image,(800,600))
+        self.image = pygame.transform.scale(self.base_image,(800/grid_width,600/grid_height))
         
     def is_conductive(self):
         return True
@@ -23,8 +23,8 @@ class PowerPole(pygame.sprite.Sprite, PowerNode):
         self.rect.center = index_to_coordinates(screen, *self.position)
         screen.blit(self.image, self.rect)
 
-    def resize_image(self, screen: pygame.Surface):
-        self.image = pygame.transform.scale(self.base_image, (screen.get_width(), screen.get_height()))
+    def resize(self, screen: pygame.Surface):
+        self.image = pygame.transform.scale(self.base_image, (screen.get_width()/grid_width, screen.get_height()/grid_height))
 
     def is_destructible(self):
         return True

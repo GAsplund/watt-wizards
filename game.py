@@ -61,6 +61,7 @@ class Game:
             self.handle_mouse_up(event)
         elif event.type == pygame.VIDEORESIZE:
             self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+            self.power_map.resize_image(self.screen)
     
     def handle_mouse_up(self, event: pygame.event.Event):
         mouse_pos = coordinates_to_index(self.screen, *pygame.mouse.get_pos())

@@ -49,6 +49,7 @@ class PowerGrid:
     def resize(self, screen: pygame.Surface):
         for node in self.nodes.values():
             node.resize(screen)
+
     def get_node_at(self,pos: tuple[int,int]):
         return self.nodes.get(pos,None)
 
