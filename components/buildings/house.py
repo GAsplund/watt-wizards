@@ -11,11 +11,12 @@ class House(pygame.sprite.Sprite, PowerEndpoint):
 		pygame.sprite.Sprite.__init__(self)
 		PowerEndpoint.__init__(self,position)
 		
-		self.base_image = pygame.image.load("assets/house.png")
+		self.base_image = pygame.image.load("assets/images/house.png")
 		self.image = pygame.transform.scale(self.base_image,(800/grid_width,600/grid_height))
 		#self.actual_image = pygame.transform.rotate(self.actual_image, randint(0,45))
     
 	def draw(self, screen: pygame.Surface):
+		self.resize(screen)
 		block_width = int(screen.get_width()/grid_width)
 		block_height = int(screen.get_height()/grid_height)
 		self.rect = self.image.get_rect()

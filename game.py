@@ -1,24 +1,22 @@
 import pygame
 
+from game_state import GameState
 from components.buildings.house import House
 from components.buildings.power_house import PowerHouse
 from components.map import PowerMap
 from components.power.pole import PowerPole
-from utils import coordinates_to_index
-
+from utils import * 
+from sound_controller import SoundController
 
 class Game:
     # Initialize the class
     def __init__(self, screen: pygame.Surface):
         # Set up the display
         self.screen = screen
-        background_image = pygame.image.load("assets/grass.png").convert() 
-
+        background_image = pygame.image.load("assets/images/grass.png").convert()
+        self.sound_controller = SoundController()
         # Set up the clock
         self.clock = pygame.time.Clock()
-        pygame.mixer.init()
-        pygame.mixer.music.load("assets/music/Big_Mojo.mp3")
-        pygame.mixer.music.play(-1)
 
         # Set up the font
         font_path = "assets/fonts/Planewalker.otf"
@@ -33,13 +31,22 @@ class Game:
 
     def start_game_loop(self):
         self.pole_selection = None
-        
+        self.sound_controller.stop_music()
+        self.sound_controller.start_music()
         self.running = True 
+        self.power_map.resize_image(self.screen)
         while self.running:
             for event in pygame.event.get():
                 self.handle_event(event)
 
             self.power_map.draw()
+            if self.pole_selection is not None:
+                block_width = int(self.screen.get_width()/grid_width)
+                block_height = int(self.screen.get_height()/grid_height)
+                (x,y) = self.pole_selection.get_position()
+                pygame.draw.rect(self.screen, (255, 255, 255), (x * block_width, y * block_height, block_width, block_height), 2)
+                pygame.draw.circle(self.screen, (255, 255, 255), (x * block_width + int(block_width/2), y * block_height + int(block_height/2)), int(block_width/2), 2)
+
 
             # Get the mouse position
             #mouse_pos = pygame.mouse.get_pos()
@@ -48,11 +55,15 @@ class Game:
             pygame.display.flip()
             
             if self.power_map.win_condition_met():
-                self.quit_game()
+                self.power_map.flush()
+                return GameState.GAME_OVER
+        return GameState.EXIT
  
-    def add_houses(self, houses: list[House]):
+    def erect_hice(self, houses: list[House]):
         for house in houses:
             self.power_map.add_node(house)
+    def flush(self):
+        self.power_map.flush()
 
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.QUIT:
@@ -73,7 +84,8 @@ class Game:
                     return
                 
                 if self.pole_selection is not None:
-                    self.power_map.add_connection(self.pole_selection, pole_at_pos)
+                    if self.power_map.add_connection(self.pole_selection, pole_at_pos):
+                        self.sound_controller.play_sound("connect")
                     self.pole_selection = None
                     return
                     
@@ -83,6 +95,7 @@ class Game:
              
             new_pole = PowerPole(mouse_pos)
             self.power_map.add_node(new_pole)
+            self.sound_controller.play_sound("place_pole")
             self.pole_selection = None    
         
         if event.button == 3:
@@ -91,19 +104,6 @@ class Game:
     def quit_game(self):
         print("Goodbye!")
         self.running = False
-
-if __name__ == "__main__":
-    pygame.init()
-
-    screen_width = 800
-    screen_height = 600
-    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
-    pygame.display.set_caption("Watt Wizards - The Game")
-
-    game = Game(screen)
-
-    houses = [House((5,5)),House((10,2)), PowerHouse((10,10))]
-    game.add_houses(houses)
-    game.start_game_loop()
-
-    pygame.quit()
+        
+    def get_sound_controller(self):
+        return self.sound_controller
