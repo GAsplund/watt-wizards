@@ -1,4 +1,3 @@
-from game_state import GameState
 import pygame
 import sys
 
@@ -38,11 +37,11 @@ class MainMenu:
                     self.background_image = pygame.transform.scale(self.background_image_original, (event.w, int(event.w / self.background_image_original.get_width() * self.background_image_original.get_height())))
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if self.level_1_button.collidepoint(event.pos):
-                        return GameState.LEVEL_1
+                        return 1
                     if self.level_2_button.collidepoint(event.pos):
-                        return GameState.LEVEL_2 
+                        return 2 
                     if self.exit_button.collidepoint(event.pos):
-                        return GameState.EXIT
+                        return -1
                     
             self.resize_buttons()
                     
@@ -61,10 +60,10 @@ class MainMenu:
             if self.level_1_button.collidepoint(pygame.mouse.get_pos()):
                 pygame.draw.rect(self.screen, (0,0,0), self.level_1_button,5)
                 pygame.mouse.set_cursor(pygame.cursors.diamond)
-            if self.level_2_button.collidepoint(pygame.mouse.get_pos()):
+            elif self.level_2_button.collidepoint(pygame.mouse.get_pos()):
                 pygame.draw.rect(self.screen, (0,0,0), self.level_2_button,5)
                 pygame.mouse.set_cursor(pygame.cursors.diamond)
-            if self.exit_button.collidepoint(pygame.mouse.get_pos()):
+            elif self.exit_button.collidepoint(pygame.mouse.get_pos()):
                 pygame.draw.rect(self.screen, (0,0,0), self.exit_button,5)
                 pygame.mouse.set_cursor(pygame.cursors.broken_x)
             else:

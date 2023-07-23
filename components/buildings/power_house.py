@@ -32,4 +32,6 @@ class PowerHouse(House):
 		pygame.draw.rect(screen, (0,0,0), rect)
 		screen.blit(text_surface, rect)
 
-		
+	@staticmethod
+	def create_power_houses(positions: list[tuple[int,int]]):
+		return [PowerHouse(position) for position in positions]

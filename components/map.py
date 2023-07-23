@@ -54,8 +54,12 @@ class PowerMap:
 
     def get_node_at(self,pos:tuple[int,int]):
         return self.grid.get_node_at(pos)
+
     def win_condition_met(self):
         return self.grid.win_condition_met()
+    
+    def get_towers_used(self):
+        return self.grid.get_towers_used()
 
     def flush(self):
         self.grid = PowerGrid()

@@ -1,6 +1,5 @@
 import pygame
 
-from game_state import GameState
 from components.buildings.house import House
 from components.buildings.power_house import PowerHouse
 from components.map import PowerMap
@@ -56,8 +55,8 @@ class Game:
             
             if self.power_map.win_condition_met():
                 self.power_map.flush()
-                return GameState.GAME_OVER
-        return GameState.EXIT
+                return -2
+        return -1
  
     def erect_hice(self, houses: list[House]):
         for house in houses:
@@ -105,6 +104,9 @@ class Game:
                 self.sound_controller.play_sound("demolition")
             else:
                 self.sound_controller.play_sound("fail")
+
+    def get_towers_used(self):
+        return self.power_map.get_towers_used()
     
     def quit_game(self):
         print("Goodbye!")

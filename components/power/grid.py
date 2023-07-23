@@ -17,6 +17,9 @@ class PowerGrid:
         self.drain_houses = []
         self.has_won = False
 
+    def get_towers_used(self):
+        return (self.max_poles, self.total_poles)
+
     def add_power_node(self, power_node: PowerNode):
         if power_node.get_position() not in self.nodes and self.total_poles > 0: 
             self.nodes[power_node.get_position()] = power_node 

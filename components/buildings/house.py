@@ -32,3 +32,7 @@ class House(pygame.sprite.Sprite, PowerEndpoint):
 		return -3
 	def is_destructible(self):
 		return False
+	
+	@staticmethod
+	def create_houses(positions:list[tuple[int,int]]):
+		return [House(position) for position in positions]

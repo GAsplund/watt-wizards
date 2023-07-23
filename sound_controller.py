@@ -9,6 +9,7 @@ class SoundController:
             "connect":pygame.mixer.Sound("assets/sfx/zap.mp3"),
             "demolition":pygame.mixer.Sound("assets/sfx/demolition.wav"),
             "fail":pygame.mixer.Sound("assets/sfx/fail.mp3"),
+            "click":pygame.mixer.Sound("assets/sfx/click.mp3"),
         }
    
     def start_music(self):
