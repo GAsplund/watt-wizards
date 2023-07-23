@@ -54,7 +54,6 @@ class Game:
             pygame.display.flip()
             
             if self.power_map.win_condition_met():
-                self.power_map.flush()
                 return -2
         return -1
  
